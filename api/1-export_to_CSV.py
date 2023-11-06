@@ -1,8 +1,7 @@
 #!/usr/bin/python3
-
+#!/usr/bin/env python3
 """
-A script to gather information about an employee's TODO list progress
-from a REST API and export it to a CSV file.
+A script to gather information about an employee's TODO list progress and export it to CSV.
 
 Usage: python3 script_name.py <employee_id>
 
@@ -17,8 +16,7 @@ import csv
 
 def get_employee_todo_list_progress(employee_id):
     """
-    Retrieve and display information about an employee's TODO list progress
-    and export it to a CSV file.
+    Retrieve and display information about an employee's TODO list progress.
 
     Args:
         employee_id (int): The employee's ID.
@@ -41,14 +39,14 @@ def get_employee_todo_list_progress(employee_id):
 
         # Create a CSV file for the employee
         csv_filename = f"{employee_id}.csv"
-        with open(csv_filename, mode="w", newline="") as csv_file:
-            csv_writer = csv.writer(csv_file, quoting=csv.QUOTE_MINIMAL)
+        with open(csv_filename, 'w', newline='') as csv_file:
+            csv_writer = csv.writer(csv_file)
             csv_writer.writerow(["USER_ID", "USERNAME", "TASK_COMPLETED_STATUS", "TASK_TITLE"])
 
             for todo in todos_data:
+                task_completed_status = "True" if todo.get("completed") else "False"
                 task_title = todo.get("title", "Untitled Task")
-                completed_status = "True" if todo.get("completed") else "False"
-                csv_writer.writerow([employee_id, employee_name, completed_status, task_title])
+                csv_writer.writerow([employee_id, employee_name, task_completed_status, task_title])
 
         print(f"Data exported to {csv_filename}")
 
