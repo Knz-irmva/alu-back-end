@@ -1,50 +1,38 @@
 #!/usr/bin/python3
 
-import requests
 import sys
+import requests
 
-def fetch_todo_list(employee_id):
-    base_url = "https://jsonplaceholder.typicode.com"
-    user_url = f"{base_url}/users/{employee_id}"
-    todos_url = f"{base_url}/todos?userId={employee_id}"
+def gather_todo_progress(employee_id):
+    # Define the base URL for the API
+    base_url = 'https://jsonplaceholder.typicode.com'
 
-    # Fetch user information
-    user_response = requests.get(user_url)
-    user_data = user_response.json()
+    # Retrieve employee information
+    employee_info_response = requests.get(f'{base_url}/users/{employee_id}')
+    employee_info = employee_info_response.json()
+    employee_name = employee_info['name']
 
-    # Fetch TODO list for the user
-    todos_response = requests.get(todos_url)
-    todos_data = todos_response.json()
+    # Retrieve employee's TODO list
+    todo_response = requests.get(f'{base_url}/todos?userId={employee_id}')
+    todo_list = todo_response.json()
 
-    return user_data, todos_data
+    # Calculate progress
+    total_tasks = len(todo_list)
+    completed_tasks = sum(1 for task in todo_list if task['completed'])
 
-def display_todo_progress(employee_id):
-    try:
-        employee_id = int(employee_id)
-    except ValueError:
-        print("Error: Employee ID must be an integer.")
-        sys.exit(1)
+    # Print employee progress
+    print(f'Employee {employee_name} is done with tasks ({completed_tasks}/{total_tasks}):')
 
-    user_data, todos_data = fetch_todo_list(employee_id)
-
-    if not user_data:
-        print(f"Error: Employee with ID {employee_id} not found.")
-        sys.exit(1)
-
-    employee_name = user_data.get("name")
-    total_tasks = len(todos_data)
-    done_tasks = [task for task in todos_data if task["completed"]]
-
-    print(f"Employee {employee_name} is done with tasks ({len(done_tasks)}/{total_tasks}):")
-
-    for task in done_tasks:
-        print(f"\t{task['title']}")
+    # Print titles of completed tasks
+    for task in todo_list:
+        if task['completed']:
+            print(f'\t{task["title"]}')
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        print("Usage: python script.py <employee_id>")
+        print("Usage: python3 gather_data_from_an_API.py <employee_id>")
         sys.exit(1)
 
     employee_id = sys.argv[1]
-    display_todo_progress(employee_id)
+    gather_todo_progress(employee_id)
 
